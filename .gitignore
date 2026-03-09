@@ -14,6 +14,7 @@ results
 tmp
 
 dist/*
+frontend/dist
 dev/test.js
 
 # Optional npm cache directory
