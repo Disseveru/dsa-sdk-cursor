@@ -4,9 +4,9 @@
   "description": "DSA Starter Kit for building DeFi dapps",
   "main": "build/dsa.min.js",
   "scripts": {
-    "build": "webpack --mode production",
-    "build-dev": "webpack --mode development --config webpack.config.dev.js",
-    "dev-server": "webpack-dev-server --mode development --config webpack.config.dev.js",
+    "build": "node --openssl-legacy-provider ./node_modules/webpack/bin/webpack.js --mode production",
+    "build-dev": "node --openssl-legacy-provider ./node_modules/webpack/bin/webpack.js --mode development --config webpack.config.dev.js",
+    "dev-server": "node --openssl-legacy-provider ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --config webpack.config.dev.js",
     "prepare": "npm run build",
     "trypublish": "npm publish || true",
     "postversion": "git push && git push --tags && npm publish && npm run open-releases",
