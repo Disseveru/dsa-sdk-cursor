@@ -42,8 +42,8 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       hash: true,
-      title: 'Testing Page For SDK',
-      header: 'Use the console to test the DSA SDK',
+      title: 'Spellbook Operator',
+      header: 'Wallet-first DeFi operator',
       template: './dev/index.html',
       filename: 'index.html' 
     }),

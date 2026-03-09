@@ -2,33 +2,478 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f7fb;
+        --surface: #ffffff;
+        --surface-alt: #f8fbff;
+        --border: #d7e2f0;
+        --text: #112031;
+        --muted: #58708a;
+        --primary: #2b6ef2;
+        --primary-strong: #1749b7;
+        --success: #157347;
+        --warning-bg: #fff7dd;
+        --warning-border: #f0db8b;
+        --danger: #b42318;
+        --shadow: 0 16px 48px rgba(17, 32, 49, 0.08);
+        --radius: 20px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+        color: var(--text);
+        font-family: Inter, Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        padding: 32px 18px 48px;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .app-shell {
+        max-width: 1360px;
+        margin: 0 auto;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+
+      .hero {
+        max-width: 760px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid rgba(43, 110, 242, 0.18);
+        background: rgba(43, 110, 242, 0.08);
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--primary-strong);
+      }
+
+      h1 {
+        margin: 14px 0 10px;
+        font-size: clamp(34px, 5vw, 52px);
+        line-height: 1.05;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+        max-width: 680px;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .button {
+        border: 0;
+        border-radius: 14px;
+        padding: 13px 18px;
+        font-weight: 700;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+      }
+
+      .button-primary {
+        background: linear-gradient(135deg, var(--primary), #5391ff);
+        color: #fff;
+        box-shadow: 0 14px 32px rgba(43, 110, 242, 0.26);
+      }
+
+      .button-primary:hover {
+        box-shadow: 0 18px 38px rgba(43, 110, 242, 0.3);
+      }
+
+      .button-secondary {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      .button-secondary:disabled,
+      .button-primary:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .banner {
+        margin-bottom: 24px;
+        padding: 16px 18px;
+        border-radius: 16px;
+        border: 1px solid var(--warning-border);
+        background: var(--warning-bg);
+        color: #6a5200;
+        line-height: 1.5;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(360px, 0.8fr);
+        gap: 22px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 22px;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid rgba(215, 226, 240, 0.82);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .card-header {
+        padding: 24px 24px 10px;
+      }
+
+      .card-title {
+        margin: 0 0 6px;
+        font-size: 20px;
+      }
+
+      .card-copy {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .card-body {
+        padding: 0 24px 24px;
+      }
+
+      .wallet-grid,
+      .metrics,
+      .inline-grid,
+      .toggle-grid,
+      .preset-grid,
+      .agent-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .wallet-grid,
+      .inline-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .metrics {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .preset-grid,
+      .toggle-grid,
+      .agent-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .metric,
+      .wallet-stat,
+      .preset,
+      .agent-item {
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface-alt);
+      }
+
+      .metric-label,
+      .wallet-label,
+      .field-label,
+      .toggle-label,
+      .agent-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .metric-value,
+      .wallet-value,
+      .agent-value {
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .wallet-value.small,
+      .metric-value.small {
+        font-size: 14px;
+        word-break: break-all;
+      }
+
+      .wallet-actions,
+      .form-actions,
+      .plan-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(21, 115, 71, 0.1);
+        color: var(--success);
+        font-weight: 700;
+      }
+
+      .status-pill.pending {
+        background: rgba(43, 110, 242, 0.1);
+        color: var(--primary-strong);
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .field,
+      .toggle {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .field-help,
+      .helper {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        background: #fff;
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: var(--text);
+      }
+
+      .field textarea {
+        min-height: 122px;
+        resize: vertical;
+      }
+
+      .toggle {
+        gap: 10px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface-alt);
+        border-radius: 16px;
+      }
+
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .toggle-row input {
+        width: 18px;
+        height: 18px;
+      }
+
+      .section-label {
+        margin: 4px 0 0;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 14px 10px;
+        text-align: left;
+        border-bottom: 1px solid #e7eef7;
+        vertical-align: top;
+      }
+
+      th {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+
+      td {
+        color: var(--text);
+      }
+
+      .table-action {
+        padding: 8px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-weight: 700;
+      }
+
+      .plan-box {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: #0d1724;
+        color: #d9e7f6;
+        padding: 18px;
+      }
+
+      .plan-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .plan-meta div {
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .plan-meta span {
+        display: block;
+        margin-bottom: 4px;
+        color: #8ea3bb;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .steps {
+        margin: 0 0 16px;
+        padding-left: 18px;
+      }
+
+      .steps li {
+        margin-bottom: 8px;
+        line-height: 1.5;
+      }
+
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .empty-state {
+        padding: 18px;
+        border: 1px dashed rgba(142, 163, 187, 0.35);
+        border-radius: 16px;
+        color: #8ea3bb;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .footer-note {
+        margin-top: 24px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      @media (max-width: 1120px) {
+        .grid,
+        .metrics,
+        .wallet-grid,
+        .inline-grid,
+        .toggle-grid,
+        .preset-grid,
+        .agent-grid,
+        .plan-meta {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 22px 12px 34px;
+        }
+
+        .card-header,
+        .card-body {
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+
+        h1 {
+          font-size: 32px;
+        }
+      }
+    </style>
   </head>
 
   <body>
-    <h1> <%= htmlWebpackPlugin.options.header %> </h1>
-    <a id="initWeb3" href="#">Init Web3</a>
-    <h3>After connecting to web3, type "dsa' into console to start jamming with building DeFi apps.</h3>
-
-    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.6/dist/web3.min.js"></script>
-    <script src="https://apis.instadapp.io/js/web3Modal/config.js"></script>
-    <script src="https://apis.instadapp.io/js/web3Modal/connect.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
-  
-    <script>
-      
-      // calling this function in web3Modal/connect.js
-      $("#initWeb3").on("click", function(e) {
-          e.preventDefault();
-          InitWeb3()
-      })
- 
-      $(window).on( "load", async function(e) {
-        e.preventDefault();
-        await InitWeb3()
-        window.dsa = new DSA(window.web3)
-      });
-    </script>
-
+    <div id="app"></div>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.4/dist/web3.min.js"></script>
   </body>
 </html>
