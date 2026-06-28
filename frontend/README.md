@@ -37,15 +37,27 @@ Optional: Create `.env` with:
 - **Frontend**: React + TypeScript + Vite + Tailwind
 - **Wallet**: wagmi + viem (Ethereum mainnet)
 - **DeFi**: Instadapp dsa-connect SDK for spell casting
-- **AI Agent**: Integration layer in `src/lib/dsa-spells.ts` — connect your agent to these spell builders
+- **Agent**: `src/context/AgentContext.tsx` — scans and casts spells via wallet
+- **Spell builders**: `src/lib/dsa-spells.ts` — flash loan arbitrage and liquidation recipes
+- **Node keeper**: `../agent/` — autonomous backend agent (see `agent/README.md`)
 
 ## How It Works
 
 1. User connects wallet (needs ETH for gas)
 2. User creates a DSA if they don't have one
-3. User enables arbitrage and/or liquidations
-4. AI agent runs in the background, finding opportunities
-5. When profitable, agent builds spells and calls `dsa.cast(spells)` via the connected wallet
+3. User enables arbitrage and/or liquidations from the dashboard
+4. Agent scans every 30s for opportunities (Oasis quotes, Maker/Compound health)
+5. When profitable, user clicks "Cast Spell" or the Node keeper auto-executes
+
+## Node Keeper (Autonomous Mode)
+
+For 24/7 operation without a browser:
+
+```bash
+cp agent/.env.example agent/.env
+npm run agent:dry    # scan only
+npm run agent        # continuous keeper
+```
 
 ## Risk Disclaimer
 

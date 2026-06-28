@@ -33,7 +33,7 @@ const DydxFlashloan = require("./resolvers/dydxFlashloan.js");
 const Aave = require("./resolvers/aave.js");
 const Uniswap = require("./resolvers/uniswap.js");
 const Tokens = require("./resolvers/tokens.js");
-const ChainLinkPrices = require("./resolvers/chainLink.js");
+const ChainLinkPrices = require("./resolvers/chainlink.js");
 const CurveThree = require("./resolvers/curve_three.js");
 
 // Gnosis Safe

@@ -1,0 +1,16 @@
+{
+  "name": "defi-automation-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Keeper agent for DSA flash-loan arbitrage and liquidations",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "scan": "node index.js --once",
+    "dry": "DRY_RUN=true node index.js --once"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "web3": "^1.10.0"
+  }
+}

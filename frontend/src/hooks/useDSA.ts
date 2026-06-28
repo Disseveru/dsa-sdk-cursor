@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAccount } from 'wagmi'
+import { castSpellSteps } from '../lib/cast-spells'
+import type { Spell } from '../lib/dsa-spells'
 
-// Dynamic imports for DSA - these need Web3 which requires window
 let DSA: any = null
 let Web3: any = null
 
@@ -22,6 +23,16 @@ export function useDSA() {
   const [accounts, setAccounts] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const refreshAccounts = useCallback(async () => {
+    if (!dsa || !address) return []
+    const accs = await dsa.getAccounts(address)
+    setAccounts(accs || [])
+    if (accs?.length > 0) {
+      await dsa.setInstance(accs[0].id)
+    }
+    return accs || []
+  }, [dsa, address])
 
   useEffect(() => {
     if (!isConnected || !address || typeof window === 'undefined' || !(window as any).ethereum) {
@@ -67,8 +78,27 @@ export function useDSA() {
     }
   }, [isConnected, address])
 
-  const createAccount = () => dsa?.build?.({})
+  const createAccount = async () => {
+    const tx = await dsa?.build?.({})
+    await refreshAccounts()
+    return tx
+  }
+
   const setActiveAccount = (id: number) => dsa?.setInstance?.(id)
 
-  return { dsa, accounts, isLoading, error, createAccount, setActiveAccount }
+  const castSpells = async (steps: Spell[]) => {
+    if (!dsa) throw new Error('DSA not initialized')
+    return castSpellSteps(dsa, steps)
+  }
+
+  return {
+    dsa,
+    accounts,
+    isLoading,
+    error,
+    createAccount,
+    setActiveAccount,
+    refreshAccounts,
+    castSpells,
+  }
 }
