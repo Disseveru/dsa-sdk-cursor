@@ -13,7 +13,20 @@ if [[ ! -d "$DIST" ]] || [[ -z "$(ls -A "$DIST" 2>/dev/null)" ]]; then
 fi
 
 echo "==> Deploying to gh-pages branch"
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+if [[ "$CURRENT_BRANCH" != "master" ]]; then
+  echo "Refusing to deploy from $CURRENT_BRANCH; merge to master first." >&2
+  exit 1
+fi
+
 WORKTREE="$ROOT/.gh-pages-deploy"
+cleanup() {
+  git worktree remove --force "$WORKTREE" 2>/dev/null || rm -rf "$WORKTREE"
+  git worktree prune 2>/dev/null || true
+}
+trap cleanup EXIT
+
+git worktree prune 2>/dev/null || true
 rm -rf "$WORKTREE"
 git worktree add --detach "$WORKTREE" HEAD
 
@@ -26,7 +39,5 @@ git add -A
 git -c user.name="Cursor Agent" -c user.email="agent@cursor.com" commit -m "Deploy GitHub Pages from Cursor"
 git push -f origin HEAD:gh-pages
 popd >/dev/null
-
-git worktree remove --force "$WORKTREE" 2>/dev/null || rm -rf "$WORKTREE"
 
 echo "==> Live at https://disseveru.github.io/dsa-sdk-cursor/"
