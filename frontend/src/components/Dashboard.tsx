@@ -1,40 +1,44 @@
+import { useState } from 'react'
 import { useAccount } from 'wagmi'
-import { DSAStatus } from './DSAStatus'
-import { ArbitragePanel } from './ArbitragePanel'
-import { LiquidationsPanel } from './LiquidationsPanel'
-import { AutomationStatus } from './AutomationStatus'
+import { useDSA } from '../hooks/useDSA'
+import { SetupWizard } from './SetupWizard'
+import { SimpleEarnPanel } from './SimpleEarnPanel'
 
 export function Dashboard() {
   const { address } = useAccount()
+  const { hasAccount, isLoading } = useDSA()
+  const [setupDone, setSetupDone] = useState(false)
+
+  const showWizard = !hasAccount && !setupDone
 
   return (
-    <div className="space-y-8">
-      {/* Status Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <DSAStatus />
-        <AutomationStatus />
-        <div className="bg-surface-elevated border border-border rounded-xl p-4">
-          <h3 className="text-sm font-medium text-gray-400 mb-1">Wallet</h3>
-          <p className="font-mono text-sm truncate" title={address}>
-            {address?.slice(0, 6)}...{address?.slice(-4)}
-          </p>
-        </div>
-      </div>
+    <div className="space-y-6">
+      {showWizard ? (
+        <SetupWizard onComplete={() => setSetupDone(true)} />
+      ) : (
+        <>
+          {hasAccount && (
+            <div className="flex items-center gap-3 bg-surface-elevated border border-border rounded-xl p-4">
+              <div className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse shrink-0" />
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-accent">Account ready</p>
+                <p className="text-xs text-gray-500 truncate">
+                  {address?.slice(0, 6)}...{address?.slice(-4)}
+                </p>
+              </div>
+            </div>
+          )}
 
-      {/* Main Action Panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ArbitragePanel />
-        <LiquidationsPanel />
-      </div>
-
-      {/* Info Footer */}
-      <div className="bg-surface-muted/50 border border-border rounded-xl p-4">
-        <p className="text-sm text-gray-400">
-          <strong className="text-gray-300">How it works:</strong> The AI agent monitors the blockchain for profitable 
-          arbitrage opportunities (price differences across DEXs) and positions eligible for liquidation. When it finds 
-          one, it uses flash loans to execute the transaction—you only pay gas. Profits go to your connected wallet.
-        </p>
-      </div>
+          {isLoading ? (
+            <div className="animate-pulse space-y-4">
+              <div className="h-32 bg-surface-elevated rounded-2xl" />
+              <div className="h-20 bg-surface-elevated rounded-2xl" />
+            </div>
+          ) : (
+            <SimpleEarnPanel />
+          )}
+        </>
+      )}
     </div>
   )
 }

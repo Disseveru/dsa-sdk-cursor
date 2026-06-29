@@ -6,27 +6,30 @@ export function ConnectButton() {
   const { disconnect } = useDisconnect()
 
   if (isConnected && address) {
-    const truncated = `${address.slice(0, 6)}...${address.slice(-4)}`
     return (
       <button
         onClick={() => disconnect()}
-        className="flex items-center gap-2 px-4 py-2 bg-surface-elevated border border-border 
-                   rounded-lg hover:bg-surface-muted transition-colors text-sm font-mono"
+        className="px-3 py-2 bg-surface-elevated border border-border rounded-lg text-xs text-gray-400
+                   active:bg-surface-muted transition-colors"
       >
-        <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-        {truncated}
+        Disconnect
       </button>
     )
   }
 
+  const handleConnect = () => {
+    const wc = connectors.find((c) => c.id === 'walletConnect') ?? connectors[0]
+    if (wc) connect({ connector: wc })
+  }
+
   return (
     <button
-      onClick={() => connect({ connector: connectors[0] })}
+      onClick={handleConnect}
       disabled={isPending || connectors.length === 0}
-      className="px-4 py-2 bg-accent hover:bg-accent-muted disabled:opacity-50 
-                 rounded-lg font-medium text-sm transition-colors"
+      className="px-4 py-2 bg-accent text-surface rounded-lg font-medium text-sm
+                 active:scale-[0.98] transition-transform disabled:opacity-50"
     >
-      {isPending ? 'Connecting...' : 'Connect Wallet'}
+      {isPending ? 'Connecting...' : 'Connect'}
     </button>
   )
 }

@@ -18,7 +18,7 @@ async function loadDSA() {
 }
 
 export function useDSA() {
-  const { address, isConnected } = useAccount()
+  const { address, isConnected, connector } = useAccount()
   const [dsa, setDsa] = useState<any>(null)
   const [accounts, setAccounts] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -35,7 +35,7 @@ export function useDSA() {
   }, [dsa, address])
 
   useEffect(() => {
-    if (!isConnected || !address || typeof window === 'undefined' || !(window as any).ethereum) {
+    if (!isConnected || !address || !connector) {
       setDsa(null)
       setAccounts([])
       return
@@ -48,7 +48,8 @@ export function useDSA() {
       setError(null)
       try {
         const { DSA: DSAClass, Web3: Web3Class } = await loadDSA()
-        const web3 = new Web3Class((window as any).ethereum)
+        const provider = await connector!.getProvider()
+        const web3 = new Web3Class(provider as any)
         const dsaInstance = new DSAClass(web3)
         if (cancelled) return
 
@@ -63,7 +64,7 @@ export function useDSA() {
         }
       } catch (err: any) {
         if (!cancelled) {
-          setError(err?.message || 'Failed to load DSA')
+          setError(err?.message || 'Could not connect to your wallet')
           setDsa(null)
           setAccounts([])
         }
@@ -76,7 +77,7 @@ export function useDSA() {
     return () => {
       cancelled = true
     }
-  }, [isConnected, address])
+  }, [isConnected, address, connector])
 
   const createAccount = async () => {
     const tx = await dsa?.build?.({})
@@ -87,7 +88,7 @@ export function useDSA() {
   const setActiveAccount = (id: number) => dsa?.setInstance?.(id)
 
   const castSpells = async (steps: Spell[]) => {
-    if (!dsa) throw new Error('DSA not initialized')
+    if (!dsa) throw new Error('Wallet not ready yet')
     return castSpellSteps(dsa, steps)
   }
 
@@ -100,5 +101,6 @@ export function useDSA() {
     setActiveAccount,
     refreshAccounts,
     castSpells,
+    hasAccount: accounts && accounts.length > 0,
   }
 }

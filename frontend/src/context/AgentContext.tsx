@@ -58,7 +58,7 @@ export function AgentProvider({ children }: { children: ReactNode }) {
 
   const scanNow = useCallback(async () => {
     if (!dsa) {
-      addLog('warn', 'DSA not loaded — connect wallet first')
+      addLog('warn', 'Connect your wallet first')
       return
     }
 
@@ -78,21 +78,21 @@ export function AgentProvider({ children }: { children: ReactNode }) {
           addLog('warn', `Arbitrage scan: ${result.arbitrage.error}`)
         } else if (result.arbitrage && (result.arbitrage as ArbitrageOpportunity).profitable) {
           const opp = result.arbitrage as ArbitrageOpportunity
-          addLog('success', `Arbitrage found: ~$${opp.estimatedProfitUsd.toFixed(2)} profit on ${opp.borrowAmount} DAI`)
+          addLog('success', `Found a trade worth about $${opp.estimatedProfitUsd.toFixed(2)}`)
         } else if (result.arbitrage) {
           const opp = result.arbitrage as ArbitrageOpportunity
-          addLog('info', `No profitable arbitrage (~$${opp.estimatedProfitUsd.toFixed(2)} spread)`)
+          addLog('info', `No profitable trades right now (spread: $${opp.estimatedProfitUsd.toFixed(2)})`)
         }
       }
 
       if (liquidationsEnabled) {
         const actionable = result.liquidations.filter((c) => c.spellSteps)
         if (actionable.length) {
-          addLog('success', `Found ${actionable.length} actionable liquidation(s)`)
+          addLog('success', `Found ${actionable.length} liquidation reward(s)`)
         } else if (result.liquidations.length) {
-          addLog('info', `${result.liquidations.length} unhealthy position(s) — monitoring`)
+          addLog('info', `Watching ${result.liquidations.length} risky position(s)`)
         } else {
-          addLog('info', 'No liquidation candidates')
+          addLog('info', 'No liquidation opportunities right now')
         }
       }
     } catch (err: any) {
@@ -104,21 +104,21 @@ export function AgentProvider({ children }: { children: ReactNode }) {
 
   const executeSpell = useCallback(async (steps: Spell[], label: string) => {
     if (!dsa) {
-      addLog('error', 'DSA not loaded')
+      addLog('error', 'Wallet not ready')
       return
     }
     if (!accounts?.length) {
-      addLog('error', 'Create a Smart Account (DSA) before casting spells')
+      addLog('error', 'Set up your earning account first')
       return
     }
 
     try {
-      addLog('info', `Casting spell: ${label}`)
+      addLog('info', `Starting: ${label}`)
       const gas = await estimateSpellGas(dsa, steps)
-      if (gas) addLog('info', `Estimated gas: ${gas}`)
+      if (gas) addLog('info', `Estimated fee: ${gas} gas units`)
 
       const txHash = await castSpellSteps(dsa, steps)
-      addLog('success', `Spell cast: ${txHash}`)
+      addLog('success', `Done! Transaction: ${txHash.slice(0, 10)}...`)
     } catch (err: any) {
       addLog('error', `Cast failed: ${err?.message || 'Unknown error'}`)
       throw err
