@@ -1,9 +1,45 @@
 require('dotenv').config({ path: require('path').join(__dirname, '.env') })
 
+const Web3 = require('web3')
+
+const PRIVATE_KEY_ENV_KEYS = [
+  'PRIVATE_KEY',
+  'EOA_PRIVATE_KEY',
+  'PRIVATE_KEY_2',
+  'CDP_PRIVATE_KEY',
+]
+
+function resolvePrivateKey() {
+  for (const key of PRIVATE_KEY_ENV_KEYS) {
+    const raw = process.env[key]
+    if (!raw) continue
+    try {
+      const pk = raw.startsWith('0x') ? raw : `0x${raw}`
+      Web3.utils.toChecksumAddress(
+        Web3.eth.accounts.privateKeyToAccount(pk).address
+      )
+      return pk
+    } catch {
+      // try next key
+    }
+  }
+  return null
+}
+
+function addressFromPrivateKey(privateKey) {
+  if (!privateKey) return null
+  return Web3.eth.accounts.privateKeyToAccount(privateKey).address
+}
+
+const privateKey = resolvePrivateKey()
+
 module.exports = {
-  ethNodeUrl: process.env.ETH_NODE_URL || 'https://eth.llamarpc.com',
-  privateKey: process.env.PRIVATE_KEY,
-  publicAddress: process.env.PUBLIC_ADDRESS,
+  ethNodeUrl:
+    process.env.ETH_NODE_URL ||
+    process.env.MAINNET_RPC_URL ||
+    'https://ethereum.publicnode.com',
+  privateKey,
+  publicAddress: process.env.PUBLIC_ADDRESS || addressFromPrivateKey(privateKey),
   dsaId: process.env.DSA_ID ? Number(process.env.DSA_ID) : null,
 
   scanIntervalMs: Number(process.env.SCAN_INTERVAL_MS || 30_000),
