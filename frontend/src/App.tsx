@@ -1,6 +1,8 @@
 import { useAccount, useConnect } from 'wagmi'
 import { ConnectButton } from './components/ConnectButton'
 import { Dashboard } from './components/Dashboard'
+import { NetworkGuard } from './components/NetworkGuard'
+import { getPreferredConnector } from './lib/wallet'
 
 function App() {
   const { isConnected } = useAccount()
@@ -21,13 +23,15 @@ function App() {
               <p className="text-xs text-gray-400">No coding needed</p>
             </div>
           </div>
-          {isConnected && <ConnectButton />}
+          <ConnectButton />
         </div>
       </header>
 
       <main className="max-w-lg mx-auto px-4 py-6">
         {isConnected ? (
-          <Dashboard />
+          <NetworkGuard>
+            <Dashboard />
+          </NetworkGuard>
         ) : (
           <WelcomeSection />
         )}
@@ -40,8 +44,8 @@ function WelcomeSection() {
   const { connect, connectors, isPending } = useConnect()
 
   const handleConnect = () => {
-    const wc = connectors.find((c) => c.id === 'walletConnect') ?? connectors[0]
-    if (wc) connect({ connector: wc })
+    const connector = getPreferredConnector(connectors)
+    if (connector) connect({ connector })
   }
 
   return (

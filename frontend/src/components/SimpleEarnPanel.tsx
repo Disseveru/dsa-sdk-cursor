@@ -87,8 +87,8 @@ export function SimpleEarnPanel() {
               color="accent"
             />
             <EarnOption
-              label="Liquidation rewards"
-              description="Earn bonus for helping close risky loans"
+              label="Recover collateral"
+              description="Withdraw collateral from your own liquidated positions"
               enabled={liquidationsEnabled}
               onToggle={() => {
                 setActive(true)
@@ -118,7 +118,7 @@ export function SimpleEarnPanel() {
             {isExecuting ? 'Confirm in MetaMask...' : 'Earn Now'}
           </button>
           <p className="text-xs text-gray-500 text-center">
-            MetaMask will ask you to approve. You only pay a small gas fee.
+            MetaMask will ask you to approve. Gas fees and protocol fees apply.
           </p>
         </div>
       )}

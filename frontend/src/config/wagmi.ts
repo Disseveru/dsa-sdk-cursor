@@ -2,13 +2,20 @@ import { mainnet } from 'wagmi/chains'
 import { createConfig, http } from 'wagmi'
 import { injected, walletConnect } from 'wagmi/connectors'
 
-const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'Bc67443847288ab3b22836c02ba280b8'
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
+
+if (!projectId && import.meta.env.PROD) {
+  console.warn(
+    'VITE_WALLETCONNECT_PROJECT_ID is not set. Set it in Cursor Secrets or frontend/.env before deploying.',
+  )
+}
 
 export const config = createConfig({
   chains: [mainnet],
   connectors: [
+    injected(),
     walletConnect({
-      projectId,
+      projectId: projectId || '00000000000000000000000000000000',
       showQrModal: true,
       metadata: {
         name: 'DeFi Auto-Earn',
@@ -17,7 +24,6 @@ export const config = createConfig({
         icons: ['https://avatars.githubusercontent.com/u/1'],
       },
     }),
-    injected(),
   ],
   transports: {
     [mainnet.id]: http(),

@@ -1,4 +1,5 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { getPreferredConnector } from '../lib/wallet'
 
 export function ConnectButton() {
   const { address, isConnected } = useAccount()
@@ -18,8 +19,8 @@ export function ConnectButton() {
   }
 
   const handleConnect = () => {
-    const wc = connectors.find((c) => c.id === 'walletConnect') ?? connectors[0]
-    if (wc) connect({ connector: wc })
+    const connector = getPreferredConnector(connectors)
+    if (connector) connect({ connector })
   }
 
   return (

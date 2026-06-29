@@ -1,12 +1,14 @@
-name: Deploy to GitHub Pages
+# Build and deploy run in Cursor Cloud Agents — see AGENTS.md and .github/CI.md
+#
+# This workflow is manual-only. Do not re-enable push triggers unless GitHub Actions billing is restored.
+
+name: Deploy to GitHub Pages (manual fallback)
 
 on:
-  push:
-    branches: [master, cursor/flash-loan-agent-setup-6efc]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -30,6 +32,7 @@ jobs:
         working-directory: frontend
         env:
           GITHUB_PAGES: 'true'
+          VITE_WALLETCONNECT_PROJECT_ID: ${{ secrets.VITE_WALLETCONNECT_PROJECT_ID }}
         run: |
           npm ci --legacy-peer-deps
           npm run build

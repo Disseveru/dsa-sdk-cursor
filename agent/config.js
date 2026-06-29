@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config({ path: require('path').join(__dirname, '.env') })
 
 module.exports = {
   ethNodeUrl: process.env.ETH_NODE_URL || 'https://eth.llamarpc.com',

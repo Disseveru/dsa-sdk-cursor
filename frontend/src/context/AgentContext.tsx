@@ -1,5 +1,4 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
-import { useAccount } from 'wagmi'
 import { useDSA } from '../hooks/useDSA'
 import { castSpellSteps, estimateSpellGas } from '../lib/cast-spells'
 import { runFullScan, type ArbitrageOpportunity, type ScanResult } from '../lib/agent-scanner'
@@ -40,8 +39,7 @@ function makeLog(level: AgentLogEntry['level'], message: string): AgentLogEntry 
 }
 
 export function AgentProvider({ children }: { children: ReactNode }) {
-  const { address } = useAccount()
-  const { dsa, accounts } = useDSA()
+  const { dsa, accounts, dsaAddress } = useDSA()
 
   const [isActive, setIsActive] = useState(false)
   const [arbitrageEnabled, setArbitrageEnabled] = useState(false)
@@ -51,6 +49,7 @@ export function AgentProvider({ children }: { children: ReactNode }) {
   const [logs, setLogs] = useState<AgentLogEntry[]>([])
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const scanningRef = useRef(false)
 
   const addLog = useCallback((level: AgentLogEntry['level'], message: string) => {
     setLogs((prev) => [makeLog(level, message), ...prev].slice(0, 50))
@@ -61,10 +60,13 @@ export function AgentProvider({ children }: { children: ReactNode }) {
       addLog('warn', 'Connect your wallet first')
       return
     }
+    if (scanningRef.current) return
 
+    scanningRef.current = true
     setIsScanning(true)
     try {
-      const result = await runFullScan(dsa, address, {
+      const scanAddress = dsaAddress || dsa.instance?.address
+      const result = await runFullScan(dsa, scanAddress, {
         enableArbitrage: arbitrageEnabled,
         enableLiquidations: liquidationsEnabled,
         slippagePercent: 2,
@@ -88,7 +90,7 @@ export function AgentProvider({ children }: { children: ReactNode }) {
       if (liquidationsEnabled) {
         const actionable = result.liquidations.filter((c) => c.spellSteps)
         if (actionable.length) {
-          addLog('success', `Found ${actionable.length} liquidation reward(s)`)
+          addLog('success', `Found ${actionable.length} recoverable position(s)`)
         } else if (result.liquidations.length) {
           addLog('info', `Watching ${result.liquidations.length} risky position(s)`)
         } else {
@@ -98,9 +100,10 @@ export function AgentProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       addLog('error', err?.message || 'Scan failed')
     } finally {
+      scanningRef.current = false
       setIsScanning(false)
     }
-  }, [dsa, address, arbitrageEnabled, liquidationsEnabled, addLog])
+  }, [dsa, dsaAddress, arbitrageEnabled, liquidationsEnabled, addLog])
 
   const executeSpell = useCallback(async (steps: Spell[], label: string) => {
     if (!dsa) {

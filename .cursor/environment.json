@@ -1,0 +1,5 @@
+{
+  "install": "cd frontend && npm ci --legacy-peer-deps && cd ../agent && npm ci --ignore-scripts && cd .. && npm ci --ignore-scripts",
+  "start": "",
+  "terminals": []
+}

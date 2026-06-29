@@ -45,7 +45,9 @@ export async function scanArbitrage(
     return { error: err?.message || 'Oasis quote failed' }
   }
 
-  const estimatedProfitUsd = buyAmount.buyAmt - borrowAmount
+  const estimatedGasUsd = 15
+  const flashLoanFeeUsd = borrowAmount * 0.0009
+  const estimatedProfitUsd = buyAmount.buyAmt - borrowAmount - estimatedGasUsd - flashLoanFeeUsd
 
   return {
     type: 'dai-peg-arbitrage',
