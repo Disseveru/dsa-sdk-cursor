@@ -50,6 +50,7 @@ export function AgentProvider({ children }: { children: ReactNode }) {
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const scanningRef = useRef(false)
+  const executingRef = useRef(false)
 
   const addLog = useCallback((level: AgentLogEntry['level'], message: string) => {
     setLogs((prev) => [makeLog(level, message), ...prev].slice(0, 50))
@@ -106,6 +107,10 @@ export function AgentProvider({ children }: { children: ReactNode }) {
   }, [dsa, dsaAddress, arbitrageEnabled, liquidationsEnabled, addLog])
 
   const executeSpell = useCallback(async (steps: Spell[], label: string) => {
+    if (executingRef.current) {
+      addLog('warn', 'A transaction is already pending')
+      return
+    }
     if (!dsa) {
       addLog('error', 'Wallet not ready')
       return
@@ -116,6 +121,7 @@ export function AgentProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      executingRef.current = true
       addLog('info', `Starting: ${label}`)
       const gas = await estimateSpellGas(dsa, steps)
       if (gas) addLog('info', `Estimated fee: ${gas} gas units`)
@@ -125,6 +131,8 @@ export function AgentProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       addLog('error', `Cast failed: ${err?.message || 'Unknown error'}`)
       throw err
+    } finally {
+      executingRef.current = false
     }
   }, [dsa, accounts, addLog])
 
