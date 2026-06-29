@@ -34,6 +34,10 @@ npm run agent:dry
 Set in Cursor Cloud Agents → Secrets (not committed):
 
 - `VITE_WALLETCONNECT_PROJECT_ID` — WalletConnect Cloud project ID for mobile MetaMask
+- `EOA_PRIVATE_KEY` or `PRIVATE_KEY` — wallet key for the automation agent (optional)
+- `ETH_NODE_URL` — Ethereum mainnet RPC (optional; defaults to public node)
+
+The agent auto-detects `EOA_PRIVATE_KEY`, `PRIVATE_KEY`, `PRIVATE_KEY_2`, and derives your wallet address. Run `npm run agent:discover` after install to scan for DSA accounts and opportunities.
 
 ### PR checklist
 
