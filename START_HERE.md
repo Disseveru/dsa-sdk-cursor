@@ -11,8 +11,6 @@ This guide is for you if you only have a phone (like a Moto G) and do not want t
 
    **https://disseveru.github.io/dsa-sdk-cursor/**
 
-   *(If that link is not live yet, ask whoever set this up for the current URL.)*
-
 ## Step-by-step (about 5 minutes)
 
 ### 1. Install MetaMask

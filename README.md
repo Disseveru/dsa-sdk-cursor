@@ -33,6 +33,19 @@ npm run agent                      # continuous keeper
 
 See [agent/README.md](agent/README.md) for full configuration.
 
+### Phone app (GitHub Pages)
+
+**https://disseveru.github.io/dsa-sdk-cursor/** — see [START_HERE.md](START_HERE.md).
+
+Build and deploy run in **Cursor Cloud Agents** (not GitHub Actions):
+
+```bash
+./scripts/cursor-build.sh
+./scripts/cursor-deploy-pages.sh   # after merge to master
+```
+
+See [AGENTS.md](AGENTS.md).
+
 ## Spell Recipes
 
 - **Arbitrage**: Instapool flash borrow → Oasis swap → Maker vault → flash payback
