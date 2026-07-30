@@ -28,7 +28,7 @@
     "dapps"
   ],
   "devDependencies": {
-    "@babel/cli": "^7.10.1",
+    "@babel/cli": "^8.0.4",
     "@babel/core": "^7.9.0",
     "@babel/node": "^7.8.7",
     "@babel/plugin-proposal-class-properties": "^7.10.1",
@@ -40,9 +40,9 @@
     "html-webpack-plugin": "^4.2.0",
     "prettier": "^2.0.5",
     "web3": "^1.2.8",
-    "webpack": "^4.42.1",
+    "webpack": "^5.109.2",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^6.0.0"
   },
   "dependencies": {
     "axios": "^0.19.2",
