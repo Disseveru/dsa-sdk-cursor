@@ -39,7 +39,7 @@
     "dotenv": "^8.2.0",
     "html-webpack-plugin": "^4.2.0",
     "prettier": "^2.0.5",
-    "web3": "^1.2.8",
+    "web3": "^4.16.0",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.11.0"
